@@ -1,0 +1,36 @@
+#!/bin/bash
+
+MESSAGE=$(cat $1)
+
+COMMITFORMAT="(feat|fix|build|docs|chore|cicd|styles|refactor|test|release): (.*)"
+
+
+if ! [[ "$MESSAGE" =~ $COMMITFORMAT ]]; then
+  echo ""
+  echo " Commit Message Prefix는 아래 예시와 같이 사용해주세요."
+  echo ""
+  echo "======================= 반드시 콜론(:)을 붙여야 합니다. ========================="
+  echo ""
+  echo "  feat: 새로운 기능 추가, 기존의 기능을 요구 사항에 맞추어 수정"
+  echo "  fix: 기능에 대한 버그 수정"
+  echo "  build: 빌드 관련 수정"
+  echo "  docs: 문서(주석) 수정"
+  echo "  chore: 패키지 매니저 수정, 그 외 기타 수정 ex) .gitignore"
+  echo "  cicd: CI/CD 관련 설정 수정"
+  echo "  style: 코드 스타일, 포맷팅에 대한 수정"
+  echo "  refactor: 기능의 변화가 아닌 코드 리팩터링 ex) 변수 이름 변경"
+  echo "  test: 테스트 코드 추가/수정"
+  echo "  release: 버전 릴리즈"
+  echo ""
+  echo "=================================================================================="
+  echo ""
+  echo -e " 아래 EXAMPLE과 같이 첫째 줄에 Prefix와 함께 요약을 남기고 한 줄 개행 후 상세 내용을 작성해주세요."
+  echo ""
+  echo "================================== E X A M P L E ================================="
+  echo ""
+  echo -e " git commit -m \"feat: 기능 A 추가\n\n  1. TEST파일 추가 \n  2. TEST2파일추가\n  3. TEST 관련 비즈니스 로직 추가\""
+  echo ""
+  echo "=================================================================================="
+  echo ""
+  exit 1
+fi
