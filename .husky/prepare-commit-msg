@@ -2,7 +2,7 @@
 
 MESSAGE=$(cat $1)
 
-COMMITFORMAT="(feat|fix|build|docs|chore|cicd|styles|refactor|test|release): (.*)"
+COMMITFORMAT="(feat|fix|build|docs|chore|cicd|styles|refactor|test|release|init): (.*)"
 
 
 if ! [[ "$MESSAGE" =~ $COMMITFORMAT ]]; then
@@ -21,6 +21,7 @@ if ! [[ "$MESSAGE" =~ $COMMITFORMAT ]]; then
   echo "  refactor: 기능의 변화가 아닌 코드 리팩터링 ex) 변수 이름 변경"
   echo "  test: 테스트 코드 추가/수정"
   echo "  release: 버전 릴리즈"
+  echo "  init: 프로젝트 초기 설정"
   echo ""
   echo "=================================================================================="
   echo ""
