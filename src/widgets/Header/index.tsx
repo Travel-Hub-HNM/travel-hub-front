@@ -8,7 +8,7 @@ import {
     NavigationMenuLink,
     NavigationMenuList,
     navigationMenuTriggerStyle,
-} from '@/shared/ui/navigation-menu'
+} from '@/shared/ui/NavigationMenu'
 
 const Header = () => {
     return (
