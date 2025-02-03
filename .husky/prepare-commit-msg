@@ -2,7 +2,7 @@
 
 MESSAGE=$(cat $1)
 
-COMMITFORMAT="(feat|fix|build|docs|chore|cicd|styles|refactor|test|release|init): (.*)"
+COMMITFORMAT="(feat|fix|build|docs|chore|cicd|style|refactor|test|release|init): (.*)"
 
 
 if ! [[ "$MESSAGE" =~ $COMMITFORMAT ]]; then
@@ -18,7 +18,7 @@ if ! [[ "$MESSAGE" =~ $COMMITFORMAT ]]; then
   echo "  chore: 패키지 매니저 수정, 그 외 기타 수정 ex) .gitignore"
   echo "  cicd: CI/CD 관련 설정 수정"
   echo "  style: 코드 스타일, 포맷팅에 대한 수정"
-  echo "  refactor: 기능의 변화가 아닌 코드 리팩터링 ex) 변수 이름 변경"
+  echo "  refactor: 기능의 변화가 아닌 코드 리팩터링 e) 변수 이름 변경"
   echo "  test: 테스트 코드 추가/수정"
   echo "  release: 버전 릴리즈"
   echo "  init: 프로젝트 초기 설정"
@@ -34,4 +34,3 @@ if ! [[ "$MESSAGE" =~ $COMMITFORMAT ]]; then
   echo "=================================================================================="
   echo ""
   exit 1
-fi
