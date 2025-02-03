@@ -5,7 +5,7 @@ import React from 'react'
 import SearchBar from '@/features/search/ui/SearchBar'
 import Box from '@/shared/ui/Box'
 
-const Index = () => {
+const Main = () => {
     const handleSearch = (query: string) => {
         console.log('Search query:', query)
     }
@@ -18,4 +18,4 @@ const Index = () => {
     )
 }
 
-export default Index
+export default Main
