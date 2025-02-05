@@ -1,5 +1,6 @@
-const 마이페이지 = () => {
+// 마이페이지
+const UserPage = () => {
     return <div>마이페이지</div>
 }
 
-export default 마이페이지
+export default UserPage

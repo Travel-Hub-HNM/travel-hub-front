@@ -1,5 +1,5 @@
-const MainPage = () => {
-    return <div>MainPage</div>
-}
+import { Main } from '@/pages/main'
+
+const MainPage = () => <Main />
 
 export default MainPage
