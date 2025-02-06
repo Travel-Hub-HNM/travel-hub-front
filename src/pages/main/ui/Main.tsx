@@ -1,8 +1,6 @@
 'use client'
 
-import React from 'react'
-
-import { SearchBar } from '@/features/search'
+import SearchBar from '@/features/search/ui/SearchBar'
 import Box from '@/shared/ui/Box'
 import Heading from '@/shared/ui/Heading'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/Tabs'
