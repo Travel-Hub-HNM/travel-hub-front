@@ -11,9 +11,9 @@ const Main = () => {
     }
 
     return (
-        <Box className="flex-col gap-5">
+        <Box className="flex-col gap-2">
             <Heading>어디로 여행을 떠나시나요?</Heading>
-            <SearchBar onSearch={handleSearch} />
+            <SearchBar placeholder="국가명이나 도시명으로 검색해보세요." onSearch={handleSearch} />
             <Tabs defaultValue="all" className="flex flex-col items-center">
                 <TabsList className="gap-5">
                     <TabsTrigger value="all" className="">

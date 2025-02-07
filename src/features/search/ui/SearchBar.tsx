@@ -7,7 +7,7 @@ import React from 'react'
 import { Button } from '@/shared/ui/Button'
 import { Input } from '@/shared/ui/Input'
 
-const SearchBar = ({ onSearch }) => {
+const SearchBar = ({ placeholder, onSearch }) => {
     const [query, setQuery] = React.useState('')
 
     const handleSearch = React.useCallback(() => {
@@ -19,7 +19,7 @@ const SearchBar = ({ onSearch }) => {
             <div className="relative shadow-md w-96 ">
                 <Input
                     type="search"
-                    placeholder="국가명이나 도시명으로 검색해보세요."
+                    placeholder={placeholder}
                     className="pr-10"
                     onChange={(e) => setQuery(e.target.value)}
                 />
