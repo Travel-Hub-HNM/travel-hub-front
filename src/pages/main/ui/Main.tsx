@@ -1,6 +1,7 @@
 'use client'
 
 import SearchBar from '@/features/search/ui/SearchBar'
+import { CustomTabs } from '@/shared/ui'
 import Box from '@/shared/ui/Box'
 import Heading from '@/shared/ui/Heading'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/Tabs'
@@ -14,18 +15,14 @@ const Main = () => {
         <Box className="flex-col gap-2">
             <Heading>어디로 여행을 떠나시나요?</Heading>
             <SearchBar placeholder="국가명이나 도시명으로 검색해보세요." onSearch={handleSearch} />
-            <Tabs defaultValue="all" className="flex flex-col items-center">
-                <TabsList className="gap-5">
-                    <TabsTrigger value="all" className="">
-                        전체
-                    </TabsTrigger>
-                    <TabsTrigger value="local">국내</TabsTrigger>
-                    <TabsTrigger value="global">해외</TabsTrigger>
-                </TabsList>
-                <TabsContent value="all">전체</TabsContent>
-                <TabsContent value="local">국내</TabsContent>
-                <TabsContent value="global">해외</TabsContent>
-            </Tabs>
+            <CustomTabs
+                defaultValue="all"
+                options={[
+                    { value: 'all', label: '전체', content: '전체' },
+                    { value: 'local', label: '국내', content: '국내' },
+                    { value: 'global', label: '해외', content: '해외' },
+                ]}
+            />
         </Box>
     )
 }
