@@ -1,3 +1,5 @@
+'use client'
+
 import React from 'react'
 
 import { cn } from '@/shared/lib/utils'
@@ -17,9 +19,9 @@ interface CustomTabsProps extends React.HTMLAttributes<HTMLDivElement> {
 const CustomTabs: React.FC<CustomTabsProps> = ({ defaultValue, options, className = '', ...props }) => {
     return (
         <Tabs defaultValue={defaultValue} className={cn('flex flex-col items-center', className)}>
-            <TabsList className="gap-5">
+            <TabsList className="">
                 {options.map((tab) => (
-                    <TabsTrigger key={tab.value} value={tab.value}>
+                    <TabsTrigger key={tab.value} value={tab.value} className="">
                         {tab.label}
                     </TabsTrigger>
                 ))}
