@@ -1,8 +1,7 @@
 'use client'
 
 import SearchBar from '@/features/search/ui/SearchBar'
-import { CustomTabs } from '@/shared/ui'
-import Box from '@/shared/ui/Box'
+import { Box, CustomTabs } from '@/shared/ui'
 import Heading from '@/shared/ui/Heading'
 
 const Main = () => {
