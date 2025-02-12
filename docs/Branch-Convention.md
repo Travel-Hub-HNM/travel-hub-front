@@ -6,6 +6,6 @@
 
 예시:
 
-    feat/login-kakao // 로그인페이지에서 카카오로그인에대한 작업
-    style/home-list // 홈페이지에서 리스트 스타일에 대한 작업
-    style/common-nav // 공통작업 사항 중 네비게이션 스타일 작업
+    feat/loginKakao // 로그인페이지에서 카카오로그인에대한 작업
+    style/homeList // 홈페이지에서 리스트 스타일에 대한 작업
+    style/commonNav // 공통작업 사항 중 네비게이션 스타일 작업
