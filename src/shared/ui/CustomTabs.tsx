@@ -3,7 +3,7 @@
 import React from 'react'
 
 import { cn } from '@/shared/lib/utils'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/Tabs'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui'
 
 interface ITabOption {
     value: string
@@ -35,4 +35,4 @@ const CustomTabs: React.FC<CustomTabsProps> = ({ defaultValue, options, classNam
     )
 }
 
-export default CustomTabs
+export { CustomTabs }
