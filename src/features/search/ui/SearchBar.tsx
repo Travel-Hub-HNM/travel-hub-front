@@ -7,7 +7,7 @@ import React from 'react'
 import { Button } from '@/shared/ui/Button'
 import { Input } from '@/shared/ui/Input'
 
-const SearchBar = ({ placeholder, onSearch }) => {
+const SearchBar = ({ placeholder, onSearch }: { placeholder: string; onSearch: (query: string) => void }) => {
     const [query, setQuery] = React.useState('')
 
     const handleSearch = React.useCallback(() => {
@@ -16,7 +16,7 @@ const SearchBar = ({ placeholder, onSearch }) => {
 
     return (
         <Form action={handleSearch}>
-            <div className="relative shadow-md w-96 ">
+            <div className="relative shadow-lg rounded-lg w-96">
                 <Input
                     type="search"
                     placeholder={placeholder}
