@@ -6,11 +6,6 @@ body {
     font-family: Arial, Helvetica, sans-serif;
 }
 
-main {
-    margin: 0 100px;
-    padding: 20px;
-}
-
 @layer base {
     :root {
         --background: 200 30% 99%;
@@ -49,6 +44,7 @@ main {
         @apply bg-background text-foreground;
         height: 100vh;
         main {
+            padding: 20px;
             height: calc(100vh - 3rem);
         }
     }
