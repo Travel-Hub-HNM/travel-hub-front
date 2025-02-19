@@ -18,8 +18,8 @@ interface CustomTabsProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const CustomTabs: React.FC<CustomTabsProps> = ({ defaultValue, options, className = '', ...props }) => {
     return (
-        <Tabs defaultValue={defaultValue} className={cn('flex flex-col items-center', className)}>
-            <TabsList className="">
+        <Tabs defaultValue={defaultValue} className={cn('flex flex-col items-center w-full', className)}>
+            <TabsList className="mb-4">
                 {options.map((tab) => (
                     <TabsTrigger key={tab.value} value={tab.value} className="">
                         {tab.label}

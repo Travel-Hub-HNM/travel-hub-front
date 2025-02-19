@@ -6,7 +6,7 @@ interface BoxProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const Heading: React.FC<BoxProps> = ({ children, className = '', ...props }) => {
     return (
-        <h1 className={`text-xl text-center ${className}`} {...props}>
+        <h1 className={`text-2xl font-bold text-center ${className}`} {...props}>
             {children}
         </h1>
     )
