@@ -33,17 +33,13 @@ jobs:
                   USERNAME: ${{ secrets.ORACLE_USERNAME }}
                   SSH_KEY: ${{ secrets.ORACLE_SSH_KEY }}
               run: |
-                  echo "HOST: ${HOST}"
-                  echo "USERNAME: ${USERNAME}"
-                  echo "SSH_KEY length: ${#SSH_KEY}"  # SSH_KEY의 길이 출력
-
                   # SSH 키 저장 및 권한 설정
                   mkdir -p ~/.ssh
-                  echo "${SSH_KEY}" > ~/.ssh/id_rsa  # base64 디코딩 필요 없음
+                  echo "${SSH_KEY}" > ~/.ssh/id_rsa 
                   chmod 600 ~/.ssh/id_rsa
 
                   # 서버로 파일 전송 및 배포
-                  rsync -avz -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ./build/ ${USERNAME}@${HOST}:/path/to/deploy/
+                  rsync -avz -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ./next/ ${USERNAME}@${HOST}:/path/to/deploy/
 
                   # 보안상 키 삭제
                   rm -f ~/.ssh/id_rsa
