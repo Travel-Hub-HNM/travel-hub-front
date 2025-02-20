@@ -1,15 +1,15 @@
 import React from 'react'
 
-interface BoxProps extends React.HTMLAttributes<HTMLDivElement> {
-    children: React.ReactNode
-}
+import { cn } from '@/shared/lib/utils'
 
-const Heading: React.FC<BoxProps> = ({ children, className = '', ...props }) => {
-    return (
-        <h1 className={`text-xl text-center ${className}`} {...props}>
+const Heading = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+    ({ children, className, ...props }, ref) => (
+        <h1 ref={ref} className={cn('text-2xl font-bold text-center', className)} {...props}>
             {children}
         </h1>
-    )
-}
+    ),
+)
+
+Heading.displayName = 'Heading'
 
 export default Heading
