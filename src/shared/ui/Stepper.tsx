@@ -25,7 +25,7 @@ const StepperHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTML
 
 StepperHeader.displayName = 'StepperHeader'
 
-const Stepper = React.forwardRef(({ steps, currentStep, className, ...props }: StepperProps, ref) => (
+const Stepper = React.forwardRef<HTMLDivElement, StepperProps>(({ steps, currentStep, className, ...props }, ref) => (
     <div ref={ref} className={cn('flex items-center justify-between mb-8 relative', className)}>
         {steps.map((step, index) => (
             <React.Fragment key={step}>
@@ -71,12 +71,14 @@ const StepperFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTML
 
 StepperFooter.displayName = 'StepperFooter'
 
-const StepperContent = React.forwardRef(({ className, currentStep, children, ...props }, ref) => (
-    <div ref={ref} className={cn('mt-8 p-4 bg-muted rounded-lg', className)} {...props}>
-        {children[currentStep]}
-    </div>
-))
+const StepperContent = React.forwardRef<HTMLDivElement, StepperProps & { children: React.ReactNode[] }>(
+    ({ className, currentStep, children, ...props }, ref) => (
+        <div ref={ref} className={cn('mt-8 p-4 bg-muted rounded-lg', className)} {...props}>
+            {children[currentStep]}
+        </div>
+    ),
+)
 
 StepperContent.displayName = 'StepperContent'
 
-export { StepperWrapper, StepperHeader, Stepper, StepperFooter, StepperContent }
+export { Stepper, StepperContent, StepperFooter, StepperHeader, StepperWrapper }
