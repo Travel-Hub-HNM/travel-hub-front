@@ -30,7 +30,7 @@ jobs:
             - name: Deploy to Oracle Server
               env:
                   HOST: ${{ secrets.ORACLE_HOST }}
-                  #   USERNAME: ${{ secrets.ORACLE_USERNAME }}
+                  USERNAME: ${{ secrets.ORACLE_USERNAME }}
                   SSH_KEY: ${{ secrets.ORACLE_SSH_KEY }}
               run: |
                   # SSH 키 저장 및 권한 설정
