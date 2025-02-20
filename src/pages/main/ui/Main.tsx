@@ -1,7 +1,7 @@
 'use client'
 
 import SearchBar from '@/features/search/ui/SearchBar'
-import { Box, CustomTabs } from '@/shared/ui'
+import { Box, CardList, CustomTabs } from '@/shared/ui'
 import Heading from '@/shared/ui/Heading'
 
 const Main = () => {
@@ -12,13 +12,13 @@ const Main = () => {
     return (
         <Box className="flex-col gap-2">
             <Heading>어디로 여행을 떠나시나요?</Heading>
-            <SearchBar placeholder="국가명이나 도시명으로 검색해보세요." onSearch={handleSearch} />
+            <SearchBar className="mb-4" placeholder="국가명이나 도시명으로 검색해보세요." onSearch={handleSearch} />
             <CustomTabs
                 defaultValue="all"
                 options={[
-                    { value: 'all', label: '전체', content: '전체' },
-                    { value: 'local', label: '국내', content: '국내' },
-                    { value: 'global', label: '해외', content: '해외' },
+                    { value: 'all', label: '전체', content: <CardList /> },
+                    { value: 'local', label: '국내', content: <CardList /> },
+                    { value: 'global', label: '해외', content: <CardList /> },
                 ]}
             />
         </Box>
