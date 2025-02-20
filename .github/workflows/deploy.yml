@@ -35,11 +35,14 @@ jobs:
               run: |
                   # SSH 키 저장 및 권한 설정
                   mkdir -p ~/.ssh
-                  echo "${SSH_KEY}" > ~/.ssh/id_rsa 
+                  echo "${SSH_KEY}" > ~/.ssh/id_rsa  
                   chmod 600 ~/.ssh/id_rsa
 
+                  # 원격 서버에 배포 디렉토리 생성
+                  ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${USERNAME}@${HOST} "mkdir -p /home/${USERNAME}/app"
+
                   # 서버로 파일 전송 및 배포
-                  rsync -avz -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ./next/ ${USERNAME}@${HOST}:/path/to/deploy/
+                  rsync -avz -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ./.next/ ${USERNAME}@${HOST}:/home/${USERNAME}/app/
 
                   # 보안상 키 삭제
                   rm -f ~/.ssh/id_rsa
