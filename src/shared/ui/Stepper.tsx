@@ -12,42 +12,42 @@ interface StepperProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const StepperWrapper = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
     ({ className, ...props }, ref) => (
-        <div ref={ref} className={cn('w-full max-w-4xl p-8 border-2', className)} {...props} />
+        <div ref={ref} className={cn('w-full min-w-80 max-w-4xl p-8', className)} {...props} />
     ),
 )
 StepperWrapper.displayName = 'StepperWrapper'
 
 const StepperHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
     ({ className, ...props }, ref) => (
-        <div ref={ref} className={cn('text-3xl font-bold text-center mb-8', className)} {...props} />
+        <div ref={ref} className={cn('mb-8 text-center text-3xl font-bold', className)} {...props} />
     ),
 )
 
 StepperHeader.displayName = 'StepperHeader'
 
 const Stepper = React.forwardRef<HTMLDivElement, StepperProps>(({ steps, currentStep, className, ...props }, ref) => (
-    <div ref={ref} className={cn('flex items-center justify-between mb-8 relative', className)}>
+    <div ref={ref} className={cn('relative mb-8 flex items-center justify-between', className)}>
         {steps?.map((step, index) => (
             <React.Fragment key={step}>
-                <div className="flex flex-col items-center relative z-10">
+                <div className="relative z-10 flex flex-col items-center">
                     <div
                         className={cn(
-                            'w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold',
+                            'flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold',
                             index < currentStep
                                 ? 'bg-primary text-primary-foreground'
                                 : index === currentStep
                                   ? 'bg-primary text-primary-foreground'
-                                  : 'bg-gray-100 text-muted-foreground',
+                                  : 'text-muted-foreground bg-gray-100',
                         )}
                     >
-                        {index < currentStep ? <Check className="w-3 h-3" /> : index + 1}
+                        {index < currentStep ? <Check className="h-3 w-3" /> : index + 1}
                     </div>
                     <span className="mt-2 text-sm font-medium">{step}</span>
                 </div>
                 {index < steps?.length - 1 && (
                     <div
                         className={cn(
-                            'absolute top-3 -translate-y-1/2 h-0.5 w-full',
+                            'absolute top-3 h-0.5 w-full -translate-y-1/2',
                             index < currentStep ? 'bg-primary' : 'bg-gray-100',
                         )}
                         style={{
@@ -65,7 +65,7 @@ Stepper.displayName = 'Stepper'
 
 const StepperFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
     ({ className, ...props }, ref) => (
-        <div ref={ref} className={cn('flex justify-between mt-8', className)} {...props} />
+        <div ref={ref} className={cn('mt-8 flex justify-between', className)} {...props} />
     ),
 )
 
@@ -73,7 +73,7 @@ StepperFooter.displayName = 'StepperFooter'
 
 const StepperContent = React.forwardRef<HTMLDivElement, StepperProps & { children: React.ReactNode[] }>(
     ({ className, currentStep, children, ...props }, ref) => (
-        <div ref={ref} className={cn('mt-8 p-4 bg-muted rounded-lg', className)} {...props}>
+        <div ref={ref} className={cn('bg-muted mt-8 rounded-lg p-4', className)} {...props}>
             {children[currentStep]}
         </div>
     ),
