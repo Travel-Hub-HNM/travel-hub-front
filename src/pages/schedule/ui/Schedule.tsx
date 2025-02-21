@@ -26,6 +26,7 @@ import {
     StepperContent,
     StepperFooter,
     StepperWrapper,
+    Typography,
 } from '@/shared/ui'
 
 import eiffel from '../../../../public/eiffel.jpg'
@@ -95,6 +96,7 @@ const Schedule = () => {
                                 selected={date}
                                 onSelect={setDate}
                                 numberOfMonths={2}
+                                className=""
                             />
                         </PopoverContent>
                     </Popover>
@@ -105,33 +107,38 @@ const Schedule = () => {
                                 value: 'locale',
                                 label: '장소 선택',
                                 content: (
-                                    <Box className="flex-col">
+                                    <Box className="w-full flex-col">
                                         <SearchBar
                                             placeholder="장소명을 입력하세요"
                                             onSearch={(value) => {
                                                 console.log(value)
                                             }}
                                         />
-                                        <Card className="w-full max-w-2xl overflow-hidden">
-                                            <Flex>
-                                                <div className="w-1/6 min-w-[100px] p-4">
-                                                    <Image
-                                                        src={eiffel}
-                                                        alt="Location"
-                                                        width={100}
-                                                        height={100}
-                                                        style={{ objectFit: 'contain', borderRadius: '5px' }}
-                                                    />
-                                                </div>
-                                                <CardContent className="flex-1 p-4 flex flex-col justify-center">
-                                                    <p className="text-lg font-semibold mb-2">주소</p>
-                                                    <Flex>
-                                                        <Star className="w-5 h-5 text-yellow-400 fill-current" />
-                                                        <span>4.5</span>
+                                        <Flex className="max-h-[300px] w-full min-w-80 max-w-xl flex-col overflow-y-scroll rounded-lg p-4 shadow-lg">
+                                            {Array.from({ length: 5 }, (_, index) => (
+                                                <Card key={index} className="w-full border-none">
+                                                    <Flex className="flex-wrap">
+                                                        <div className="relative m-3 h-[100px] w-[100px]">
+                                                            <Image
+                                                                src={eiffel}
+                                                                alt="Location"
+                                                                layout="fill"
+                                                                objectFit="cover"
+                                                                // className="rounded-3xl"
+                                                                // style={{ borderRadius: '5px' }}
+                                                            />
+                                                        </div>
+                                                        <Flex className="flex-col items-start">
+                                                            <Typography>주소</Typography>
+                                                            <Flex>
+                                                                <Star className="h-3 w-3 fill-current text-yellow-400" />
+                                                                <Typography>4.5</Typography>
+                                                            </Flex>
+                                                        </Flex>
                                                     </Flex>
-                                                </CardContent>
-                                            </Flex>
-                                        </Card>
+                                                </Card>
+                                            ))}
+                                        </Flex>
                                     </Box>
                                 ),
                             },
@@ -139,24 +146,27 @@ const Schedule = () => {
                                 value: 'newLocale',
                                 label: '나의 장소 등록',
                                 content: (
-                                    <Box className="flex-col">
+                                    <Box className="w-full flex-col">
                                         <SearchBar
                                             placeholder="상호명 또는 주소를 입력하세요"
                                             onSearch={(value) => {
                                                 console.log(value)
                                             }}
                                         />
-                                        <div className="border-4 w-96 h-96">지도</div>
-                                        <Card className="w-full max-w-2xl overflow-hidden">
-                                            <CardContent className="flex-1 p-4 flex flex-col justify-center">
-                                                <Flex className="justify-between">
-                                                    <p className="text-lg font-semibold mb-2">
-                                                        주소주소주소주소주소주소주소주소주소주소주소주소주소주소주소
-                                                    </p>
-                                                    <Button>등록</Button>
-                                                </Flex>
-                                            </CardContent>
-                                        </Card>
+                                        <div className="h-80 w-full min-w-80 max-w-xl border-2">지도</div>
+                                        <Flex className="max-h-[150px] w-full min-w-80 max-w-xl flex-col overflow-y-scroll rounded-lg p-4 shadow-lg">
+                                            {Array.from({ length: 5 }, (_, index) => (
+                                                <Card key={index} className="w-full border-none">
+                                                    <Flex className="flex-wrap items-center justify-between p-3">
+                                                        <Flex className="flex-col">
+                                                            <Typography>상호명</Typography>
+                                                            <Typography>주소</Typography>
+                                                        </Flex>
+                                                        <Button>등록</Button>
+                                                    </Flex>
+                                                </Card>
+                                            ))}
+                                        </Flex>
                                     </Box>
                                 ),
                             },
