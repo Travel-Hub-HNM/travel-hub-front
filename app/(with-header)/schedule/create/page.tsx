@@ -1,6 +1,6 @@
 // 일정 만들기
-const CreateSchedulePage = () => {
-    return <div>CreateSchedulePage</div>
-}
+import { Schedule } from '@/pages/schedule'
+
+const CreateSchedulePage = () => <Schedule />
 
 export default CreateSchedulePage
