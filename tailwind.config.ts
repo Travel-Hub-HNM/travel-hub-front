@@ -4,6 +4,7 @@ export default {
     darkMode: ['class'],
     content: [
         './src/app/**/*.{js,ts,jsx,tsx}',
+        './src/pages/**/*.{js,ts,jsx,tsx}',
         './src/shared/**/*.{js,ts,jsx,tsx}',
         './src/entities/**/*.{js,ts,jsx,tsx}',
         './src/features/**/*.{js,ts,jsx,tsx}',
