@@ -6,13 +6,13 @@ import React from 'react'
 import { cn } from '@/shared/lib/utils'
 
 interface StepperProps extends React.HTMLAttributes<HTMLDivElement> {
-    steps: string[]
+    steps?: string[]
     currentStep: number
 }
 
 const StepperWrapper = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
     ({ className, ...props }, ref) => (
-        <div ref={ref} className={cn('w-full max-w-3xl p-8 border-2', className)} {...props} />
+        <div ref={ref} className={cn('w-full max-w-4xl p-8 border-2', className)} {...props} />
     ),
 )
 StepperWrapper.displayName = 'StepperWrapper'
@@ -27,7 +27,7 @@ StepperHeader.displayName = 'StepperHeader'
 
 const Stepper = React.forwardRef<HTMLDivElement, StepperProps>(({ steps, currentStep, className, ...props }, ref) => (
     <div ref={ref} className={cn('flex items-center justify-between mb-8 relative', className)}>
-        {steps.map((step, index) => (
+        {steps?.map((step, index) => (
             <React.Fragment key={step}>
                 <div className="flex flex-col items-center relative z-10">
                     <div
@@ -44,15 +44,15 @@ const Stepper = React.forwardRef<HTMLDivElement, StepperProps>(({ steps, current
                     </div>
                     <span className="mt-2 text-sm font-medium">{step}</span>
                 </div>
-                {index < steps.length - 1 && (
+                {index < steps?.length - 1 && (
                     <div
                         className={cn(
-                            'absolute top-3 -translate-y-1/2 h-1 w-full',
+                            'absolute top-3 -translate-y-1/2 h-0.5 w-full',
                             index < currentStep ? 'bg-primary' : 'bg-gray-100',
                         )}
                         style={{
-                            left: `calc(${(index + 1) * (100 / (steps.length - 1))}% - ${100 / (steps.length - 1)}%)`,
-                            width: `${100 / (steps.length - 1)}%`,
+                            left: `calc(${(index + 1) * (100 / (steps?.length - 1))}% - ${100 / (steps?.length - 1)}%)`,
+                            width: `${100 / (steps?.length - 1)}%`,
                         }}
                     />
                 )}

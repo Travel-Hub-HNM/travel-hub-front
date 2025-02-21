@@ -4,6 +4,7 @@ import { Search } from 'lucide-react'
 import Form from 'next/form'
 import React from 'react'
 
+import { DefaultValue } from '@/shared/config/consts'
 import { cn } from '@/shared/lib/utils'
 import { Button } from '@/shared/ui/Button'
 import { Input } from '@/shared/ui/Input'
@@ -27,7 +28,7 @@ const SearchBar = ({ placeholder, onSearch, className }: ISearchBarProps) => {
             <div className="relative shadow-lg rounded-lg w-[40rem]">
                 <Input
                     type="search"
-                    placeholder={placeholder}
+                    placeholder={placeholder ?? DefaultValue.BLANK}
                     className="pr-10"
                     onChange={(e) => setQuery(e.target.value)}
                 />
