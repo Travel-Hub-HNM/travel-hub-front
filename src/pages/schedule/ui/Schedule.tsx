@@ -65,30 +65,32 @@ const Schedule = () => {
                 <StepperContent currentStep={currentStep}>
                     <Popover>
                         <PopoverTrigger asChild>
+                            {/*<Flex className="min-w-80 max-w-xl flex-wrap justify-center">*/}
                             <Button
                                 id="date"
                                 variant="outline"
                                 className={cn(
-                                    'w-[300px] justify-start text-left font-normal',
+                                    'h-full w-full flex-wrap justify-start text-left font-normal',
                                     !date && 'text-muted-foreground',
                                 )}
                             >
                                 <CalendarIcon />
                                 {date?.from ? (
                                     date.to ? (
-                                        <>
+                                        <Typography>
                                             {format(date.from, 'yyyy년 MM월 dd일', { locale: ko })} -{' '}
                                             {format(date.to, 'yyyy년 MM월 dd일', { locale: ko })}
-                                        </>
+                                        </Typography>
                                     ) : (
-                                        format(date.from, 'yyyy년 MM월 dd일')
+                                        <Typography>{format(date.from, 'yyyy년 MM월 dd일')}</Typography>
                                     )
                                 ) : (
                                     <span>Pick a date</span>
                                 )}
                             </Button>
+                            {/*</Flex>*/}
                         </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
+                        <PopoverContent className="b w-auto p-0" align="start">
                             <Calendar
                                 initialFocus
                                 mode="range"
@@ -124,8 +126,7 @@ const Schedule = () => {
                                                                 alt="Location"
                                                                 layout="fill"
                                                                 objectFit="cover"
-                                                                // className="rounded-3xl"
-                                                                // style={{ borderRadius: '5px' }}
+                                                                className="rounded-sm"
                                                             />
                                                         </div>
                                                         <Flex className="flex-col items-start">
