@@ -49,3 +49,7 @@ body {
         }
     }
 }
+
+.tui-editor-contents {
+    all: unset;
+}
