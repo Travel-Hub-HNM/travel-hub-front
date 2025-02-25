@@ -38,11 +38,15 @@ jobs:
                   echo "${SSH_KEY}" > ~/.ssh/id_rsa  
                   chmod 600 ~/.ssh/id_rsa
 
-                  # 원격 서버에 배포 디렉토리 생성
-                  ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${USERNAME}@${HOST} "mkdir -p /home/${USERNAME}/app"
-
                   # 서버로 파일 전송 및 배포
-                  rsync -avz -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ./.next/ ${USERNAME}@${HOST}:/home/${USERNAME}/app/
+                  rsync -avz -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ./.next/ ${USERNAME}@${HOST}:/home/travelhub/app/
 
                   # 보안상 키 삭제
                   rm -f ~/.ssh/id_rsa
+            
+            - name: Start Next.js with PM2
+              run: |
+                  pm2 stop nextjs-app || true
+                  pm2 start pnpm --name "travel-hub-front" -- start
+                  pm2 save
+              
