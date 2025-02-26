@@ -6,8 +6,9 @@ on:
             - main
 
 jobs:
-    build:
+    build-and-deploy:
         runs-on: ubuntu-latest
+
         steps:
             - name: Checkout code
               uses: actions/checkout@v2
@@ -26,82 +27,44 @@ jobs:
             - name: Build project
               run: pnpm start:build
 
-            - name: Upload build artifacts
-              uses: actions/upload-artifact@v2
-              with:
-                  name: build-output
-                  path: .next/
-
-    deploy:
-        needs: build
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v2
-
-            - name: Download build artifacts
-              uses: actions/download-artifact@v2
-              with:
-                  name: build-output
-                  path: .next/
-
-            - name: Setup SSH
-              run: |
-                  mkdir -p ~/.ssh
-                  echo "${{ secrets.ORACLE_SSH_KEY }}" > ~/.ssh/id_rsa
-                  chmod 600 ~/.ssh/id_rsa
-                  ssh-keyscan -H ${{ secrets.ORACLE_HOST }} >> ~/.ssh/known_hosts
-
             - name: Deploy to Oracle Server
               env:
                   HOST: ${{ secrets.ORACLE_HOST }}
                   USERNAME: ${{ secrets.ORACLE_USERNAME }}
+                  SSH_KEY: ${{ secrets.ORACLE_SSH_KEY }}
               run: |
-                  ssh -i ~/.ssh/id_rsa ${USERNAME}@${HOST} "sudo chown -R ${USERNAME}:${USERNAME} /home/travelhub/app/"
-                  rsync -avz -e "ssh -i ~/.ssh/id_rsa" ./.next/ ${USERNAME}@${HOST}:/home/travelhub/app/
+                  # SSH 키 저장 및 권한 설정
+                  mkdir -p ~/.ssh
+                  echo "${SSH_KEY}" > ~/.ssh/id_rsa  
+                  chmod 600 ~/.ssh/id_rsa
 
-            - name: Upload SSH key
-              uses: actions/upload-artifact@v2
-              with:
-                  name: ssh-key
-                  path: ~/.ssh/
-                  retention-days: 1
+                  # 먼저 대상 디렉토리의 권한을 설정
+                  ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${USERNAME}@${HOST} "sudo chown -R ${USERNAME}:${USERNAME} /home/travelhub/app/"
 
-    pm2-setup:
-        needs: deploy
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v2
+                  # 서버로 파일 전송 및 배포
+                  rsync -avz -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ./.next/ ${USERNAME}@${HOST}:/home/travelhub/app/
 
-            - name: Download SSH key
-              uses: actions/download-artifact@v2
-              with:
-                  name: ssh-key
-                  path: ~/.ssh/
+                  # 보안상 키 삭제
+                  rm -f ~/.ssh/id_rsa
 
-            - name: Set SSH key permissions
-              run: chmod 600 ~/.ssh/id_rsa
-
-            - name: Setup PM2 Configuration
+            - name: Copy PM2 config
               env:
                   HOST: ${{ secrets.ORACLE_HOST }}
                   USERNAME: ${{ secrets.ORACLE_USERNAME }}
+                  SSH_KEY: ${{ secrets.ORACLE_SSH_KEY }}
               run: |
-                  scp -i ~/.ssh/id_rsa ecosystem.config.js ${USERNAME}@${HOST}:/home/travelhub/app/
+                  # ecosystem.config.js 파일 전송
+                  scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ecosystem.config.js ${USERNAME}@${HOST}:/home/travelhub/app/
 
-            - name: Start PM2 Service
+            - name: Deploy and Start PM2 Cluster
               env:
                   HOST: ${{ secrets.ORACLE_HOST }}
                   USERNAME: ${{ secrets.ORACLE_USERNAME }}
+                  SSH_KEY: ${{ secrets.ORACLE_SSH_KEY }}
               run: |
-                  ssh -i ~/.ssh/id_rsa ${USERNAME}@${HOST} "
+                  ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${USERNAME}@${HOST} "
                     cd /home/travelhub/app && \
                     pnpm install && \
                     pm2 reload ecosystem.config.js --update-env && \
                     pm2 save
                   "
-
-            - name: Cleanup SSH key
-              if: always()
-              run: rm -rf ~/.ssh
