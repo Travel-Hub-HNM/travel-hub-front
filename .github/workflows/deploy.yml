@@ -47,8 +47,24 @@ jobs:
                   # 보안상 키 삭제
                   rm -f ~/.ssh/id_rsa
 
-            - name: Start Next.js with PM2
+            - name: Copy PM2 config
+              env:
+                  HOST: ${{ secrets.ORACLE_HOST }}
+                  USERNAME: ${{ secrets.ORACLE_USERNAME }}
+                  SSH_KEY: ${{ secrets.ORACLE_SSH_KEY }}
               run: |
-                  pm2 stop nextjs-app || true
-                  pm2 start pnpm --name "travel-hub-front" -- start
-                  pm2 save
+                  # ecosystem.config.js 파일 전송
+                  scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ecosystem.config.js ${USERNAME}@${HOST}:/home/travelhub/app/
+
+            - name: Deploy and Start PM2 Cluster
+              env:
+                  HOST: ${{ secrets.ORACLE_HOST }}
+                  USERNAME: ${{ secrets.ORACLE_USERNAME }}
+                  SSH_KEY: ${{ secrets.ORACLE_SSH_KEY }}
+              run: |
+                  ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${USERNAME}@${HOST} "
+                    cd /home/travelhub/app && \
+                    pnpm install && \
+                    pm2 reload ecosystem.config.js --update-env && \
+                    pm2 save
+                  "
