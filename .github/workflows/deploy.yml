@@ -38,22 +38,22 @@ jobs:
                   echo "${SSH_KEY}" > ~/.ssh/id_rsa  
                   chmod 600 ~/.ssh/id_rsa
 
-                  # 필요한 파일들 전송
-                  rsync -avz -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" \
-                    ./.next/ \
-                    package.json \
-                    pnpm-lock.yaml \
-                    ${USERNAME}@${HOST}:/home/travelhub/app/
+                  # 필요한 파일들 압축 후 전송
+                  tar -czvf deploy.tar.gz .next public package.json pnpm-lock.yaml
+                  scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no deploy.tar.gz ${USERNAME}@${HOST}:/home/travelhub/
 
-                  # PM2로 애플리케이션 실행 (서버에서)
+                  # 서버에서 압축 해제 후 실행
                   ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${USERNAME}@${HOST} "
-                    cd /home/travelhub/app && \
+                    cd /home/travelhub/ && \
+                    rm -rf app && mkdir app && \
+                    tar -xzvf deploy.tar.gz -C app && \
+                    cd app && \
                     npm install -g pnpm && \
-                    pnpm install && \
+                    pnpm install --prod && \
                     pm2 stop travel-hub-front || true && \
                     pm2 start pnpm --name 'travel-hub-front' -- start:prod && \
                     pm2 save
                   "
 
-                  # 보안상 키 삭제
+                  # 보안상 SSH 키 삭제
                   rm -f ~/.ssh/id_rsa
