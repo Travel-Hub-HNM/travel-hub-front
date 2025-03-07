@@ -4,6 +4,7 @@ import { Search } from 'lucide-react'
 import Form from 'next/form'
 import React from 'react'
 
+import { DefaultValue } from '@/shared/config/consts'
 import { cn } from '@/shared/lib/utils'
 import { Button } from '@/shared/ui/Button'
 import { Input } from '@/shared/ui/Input'
@@ -23,11 +24,14 @@ const SearchBar = ({ placeholder, onSearch, className }: ISearchBarProps) => {
     }, [onSearch, query])
 
     return (
-        <Form action={handleSearch} className={cn('w-full flex justify-center items-center', className)}>
-            <div className="relative shadow-lg rounded-lg w-[40rem]">
+        <Form
+            action={handleSearch}
+            className={cn('flex w-full min-w-80 max-w-xl items-center justify-center', className)}
+        >
+            <div className="relative w-[40rem] rounded-lg shadow-lg">
                 <Input
                     type="search"
-                    placeholder={placeholder}
+                    placeholder={placeholder ?? DefaultValue.BLANK}
                     className="pr-10"
                     onChange={(e) => setQuery(e.target.value)}
                 />
@@ -36,9 +40,9 @@ const SearchBar = ({ placeholder, onSearch, className }: ISearchBarProps) => {
                     variant="ghost"
                     size="icon"
                     value={query}
-                    className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
+                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                 >
-                    <Search className="w-4 h-4" />
+                    <Search className="h-4 w-4" />
                 </Button>
             </div>
         </Form>
