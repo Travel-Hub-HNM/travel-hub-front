@@ -4,7 +4,6 @@ on:
     push:
         branches:
             - main
-    workflow_dispatch:
 
 jobs:
     build-and-deploy:
@@ -12,72 +11,48 @@ jobs:
 
         steps:
             - name: Checkout code
-              uses: actions/checkout@v4
-
-            - name: Install pnpm
-              uses: pnpm/action-setup@v2
-              with:
-                  version: 8
+              uses: actions/checkout@v2
 
             - name: Set up Node.js
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@v2
               with:
-                  node-version: '20'
-                  cache: 'pnpm'
+                  node-version: '22'
 
-            - name: Get pnpm store directory
-              shell: bash
-              run: |
-                  echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-            - name: Setup pnpm cache
-              uses: actions/cache@v3
-              with:
-                  path: ${{ env.STORE_PATH }}
-                  key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-                  restore-keys: |
-                      ${{ runner.os }}-pnpm-store-
+            - name: Install pnpm
+              run: npm install -g pnpm
 
             - name: Install dependencies
               run: pnpm install
 
             - name: Build project
               run: pnpm start:build
-              env:
-                  NEXT_TELEMETRY_DISABLED: 1
 
             - name: Deploy to Oracle Server
               env:
                   HOST: ${{ secrets.ORACLE_HOST }}
                   USERNAME: ${{ secrets.ORACLE_USERNAME }}
                   SSH_KEY: ${{ secrets.ORACLE_SSH_KEY }}
-                  DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
-                  NODE_ENV: production
               run: |
-                  # Setup SSH
+                  # SSH 키 저장 및 권한 설정
                   mkdir -p ~/.ssh
-                  echo "${SSH_KEY}" > ~/.ssh/id_rsa
+                  echo "${SSH_KEY}" > ~/.ssh/id_rsa  
                   chmod 600 ~/.ssh/id_rsa
-                  ssh-keyscan -H ${HOST} >> ~/.ssh/known_hosts
 
-                  # Create deployment package
-                  tar -czf deploy.tar.gz .next public package.json pnpm-lock.yaml next.config.js
+                  # Next.js 프로젝트 파일들 압축
+                  tar -czvf deploy.tar.gz .next node_modules package.json pnpm-lock.yaml public
 
-                  # Transfer and deploy
-                  scp -i ~/.ssh/id_rsa deploy.tar.gz ${USERNAME}@${HOST}:${DEPLOY_PATH}
-                  ssh -i ~/.ssh/id_rsa ${USERNAME}@${HOST} "
-                    cd ${DEPLOY_PATH} && \
-                    [ -d ./backup ] || mkdir backup && \
-                    [ -d ./app ] && tar -czf backup/backup-\$(date +%Y%m%d_%H%M%S).tar.gz app || true && \
+                  # 서버로 전송 및 배포
+                  scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no deploy.tar.gz ${USERNAME}@${HOST}:/home/travelhub/
+
+                  ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${USERNAME}@${HOST} "
+                    cd /home/travelhub/ && \
                     rm -rf app && mkdir app && \
-                    tar -xzf deploy.tar.gz -C app && \
+                    tar -xzvf deploy.tar.gz -C app && \
                     cd app && \
-                    export PATH="${DEPLOY_PATH}/.local/share/pnpm:$PATH" && \
-                    pnpm install --prod --frozen-lockfile && \
                     pm2 stop travel-hub-front || true && \
                     pm2 start pnpm --name 'travel-hub-front' -- start:prod && \
                     pm2 save
                   "
 
-                  # Cleanup
-                  rm -f ~/.ssh/id_rsa deploy.tar.gz
+                  # 보안상 SSH 키 삭제
+                  rm -f ~/.ssh/id_rsa
