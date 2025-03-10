@@ -1,9 +1,9 @@
-name: Deploy to Oracle Server
+name: Deploy Next.js Application
 
 on:
     push:
-        branches:
-            - main
+        branches: [main]
+    workflow_dispatch:
 
 jobs:
     build-and-deploy:
@@ -11,59 +11,82 @@ jobs:
 
         steps:
             - name: Checkout code
-              uses: actions/checkout@v2
+              uses: actions/checkout@v3
 
-            - name: Set up Node.js
-              uses: actions/setup-node@v2
+            - name: Setup Node.js
+              uses: actions/setup-node@v3
               with:
-                  node-version: '22'
+                  node-version: '18'
 
-            - name: Install pnpm
-              run: npm install -g pnpm
+            - name: Setup PNPM
+              uses: pnpm/action-setup@v2
+              with:
+                  version: 8
+                  run_install: false
+
+            - name: Get pnpm store directory
+              id: pnpm-cache
+              shell: bash
+              run: |
+                  echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+            - name: Setup pnpm cache
+              uses: actions/cache@v3
+              with:
+                  path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+                  key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+                  restore-keys: |
+                      ${{ runner.os }}-pnpm-store-
 
             - name: Install dependencies
-              run: pnpm install --no-frozen-lockfile
+              run: pnpm install
 
-            - name: Install sharp for image optimization
-              run: pnpm add sharp
+            - name: Build Next.js application
+              run: pnpm build
 
-            - name: Cache pnpm dependencies
-              uses: actions/cache@v2
-              with:
-                  path: ~/.pnpm-store
-                  key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
-                  restore-keys: |
-                      ${{ runner.os }}-pnpm-
+            - name: Create deployment package
+              run: |
+                  mkdir -p deployment
+                  cp -r .next deployment/
+                  cp -r public deployment/
+                  cp package.json deployment/
+                  cp pnpm-lock.yaml deployment/
+                  cp next.config.js deployment/
+                  cp ecosystem.config.js deployment/
 
-            - name: Build project
-              run: pnpm start:build
+            - name: Create .env file
+              run: |
+                  echo "NODE_ENV=production" > deployment/.env
 
-            - name: Deploy to Oracle Server
+            - name: Compress deployment package
+              run: tar -czf deployment.tar.gz -C deployment .
+
+            - name: Deploy to Oracle Cloud
               env:
                   HOST: ${{ secrets.ORACLE_HOST }}
                   USERNAME: ${{ secrets.ORACLE_USERNAME }}
                   SSH_KEY: ${{ secrets.ORACLE_SSH_KEY }}
               run: |
-                  # SSH 키 저장 및 권한 설정
-                  mkdir -p ~/.ssh
-                  echo "${SSH_KEY}" > ~/.ssh/id_rsa  
-                  chmod 600 ~/.ssh/id_rsa
+                  # Save SSH key to file
+                  echo "$SSH_KEY" > ssh_key.pem
+                  chmod 600 ssh_key.pem
 
-                  # Next.js 프로젝트 파일들 압축
-                  tar -czvf deploy.tar.gz .next node_modules package.json pnpm-lock.yaml public
+                  # Create deployment directory if it doesn't exist
+                  ssh -o StrictHostKeyChecking=no -i ssh_key.pem $USERNAME@$HOST "mkdir -p /home/travelhub/app"
 
-                  # 서버로 전송 및 배포
-                  scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no deploy.tar.gz ${USERNAME}@${HOST}:/home/travelhub/
+                  # Copy deployment package to server
+                  scp -o StrictHostKeyChecking=no -i ssh_key.pem deployment.tar.gz $USERNAME@$HOST:/home/travelhub/app/
 
-                  ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${USERNAME}@${HOST} "
-                    cd /home/travelhub/ && \
-                    rm -rf app && mkdir app && \
-                    tar -xzvf deploy.tar.gz -C app && \
-                    cd app && \
-                    pm2 stop travel-hub-front || true && \
-                    pm2 start pnpm --name 'travel-hub-front' -- start:prod && \
-                    pm2 save
-                  "
-
-                  # 보안상 SSH 키 삭제
-                  rm -f ~/.ssh/id_rsa
+                  # Extract and deploy
+                  ssh -o StrictHostKeyChecking=no -i ssh_key.pem $USERNAME@$HOST << 'EOF'
+                    cd /home/travelhub/app
+                    tar -xzf deployment.tar.gz
+                    rm deployment.tar.gz
+                    
+                    # Install dependencies
+                    export PATH="$HOME/.local/share/pnpm:$PATH"
+                    pnpm install --prod
+                    
+                    # Restart PM2 application
+                    pm2 reload ecosystem.config.js || pm2 start ecosystem.config.js
+                  EOF
