@@ -24,6 +24,17 @@ jobs:
             - name: Install dependencies
               run: pnpm install --no-frozen-lockfile
 
+            - name: Install sharp for image optimization
+              run: pnpm add sharp
+
+            - name: Cache pnpm dependencies
+              uses: actions/cache@v2
+              with:
+                  path: ~/.pnpm-store
+                  key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+                  restore-keys: |
+                      ${{ runner.os }}-pnpm-
+
             - name: Build project
               run: pnpm start:build
 
