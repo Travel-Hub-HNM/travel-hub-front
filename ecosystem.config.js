@@ -11,7 +11,7 @@ module.exports = {
             max_memory_restart: '1G', // 최대 메모리 재시작
             env: {
                 NODE_ENV: 'production', // 노드 환경
-                PORT: 3000, // 포트d
+                PORT: 3000, // 포트
             },
         },
     ],
