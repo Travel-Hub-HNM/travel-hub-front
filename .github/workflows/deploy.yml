@@ -1,0 +1,92 @@
+name: Deploy Next.js Application
+
+on:
+    push:
+        branches: [main]
+    workflow_dispatch:
+
+jobs:
+    build-and-deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: '18'
+
+            - name: Setup PNPM
+              uses: pnpm/action-setup@v2
+              with:
+                  version: 8
+                  run_install: false
+
+            - name: Get pnpm store directory
+              id: pnpm-cache
+              shell: bash
+              run: |
+                  echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+            - name: Setup pnpm cache
+              uses: actions/cache@v3
+              with:
+                  path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+                  key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+                  restore-keys: |
+                      ${{ runner.os }}-pnpm-store-
+
+            - name: Install dependencies
+              run: pnpm install
+
+            - name: Build Next.js application
+              run: pnpm build
+
+            - name: Create deployment package
+              run: |
+                  mkdir -p deployment
+                  cp -r .next deployment/
+                  cp -r public deployment/
+                  cp package.json deployment/
+                  cp pnpm-lock.yaml deployment/
+                  cp next.config.js deployment/
+                  cp ecosystem.config.js deployment/
+
+            - name: Create .env file
+              run: |
+                  echo "NODE_ENV=production" > deployment/.env
+
+            - name: Compress deployment package
+              run: tar -czf deployment.tar.gz -C deployment .
+
+            - name: Deploy to Oracle Cloud
+              env:
+                  HOST: ${{ secrets.ORACLE_HOST }}
+                  USERNAME: ${{ secrets.ORACLE_USERNAME }}
+                  SSH_KEY: ${{ secrets.ORACLE_SSH_KEY }}
+              run: |
+                  # Save SSH key to file
+                  echo "$SSH_KEY" > ssh_key.pem
+                  chmod 600 ssh_key.pem
+
+                  # Create deployment directory if it doesn't exist
+                  ssh -o StrictHostKeyChecking=no -i ssh_key.pem $USERNAME@$HOST "mkdir -p /home/travelhub/app"
+
+                  # Copy deployment package to server
+                  scp -o StrictHostKeyChecking=no -i ssh_key.pem deployment.tar.gz $USERNAME@$HOST:/home/travelhub/app/
+
+                  # Extract and deploy
+                  ssh -o StrictHostKeyChecking=no -i ssh_key.pem $USERNAME@$HOST << 'EOF'
+                    cd /home/travelhub/app
+                    tar -xzf deployment.tar.gz
+                    rm deployment.tar.gz
+                    
+                    # Install dependencies
+                    export PATH="$HOME/.local/share/pnpm:$PATH"
+                    pnpm install --prod
+                    
+                    # Restart PM2 application
+                    pm2 reload ecosystem.config.js || pm2 start ecosystem.config.js
+                  EOF
