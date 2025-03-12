@@ -28,6 +28,7 @@ import {
     StepperWrapper,
     Typography,
 } from '@/shared/ui'
+import Map from '@/widgets/Map'
 
 import eiffel from '../../../../public/eiffel.jpg'
 
@@ -63,6 +64,7 @@ const Schedule = () => {
                     </Button>
                 </StepperFooter>
                 <StepperContent currentStep={currentStep}>
+                    {/*AIzaSyCRbKc8-K2XlJE885qAVsZDGeNq19Wxgvs*/}
                     <Popover>
                         <PopoverTrigger asChild>
                             {/*<Flex className="min-w-80 max-w-xl flex-wrap justify-center">*/}
@@ -154,7 +156,9 @@ const Schedule = () => {
                                                 console.log(value)
                                             }}
                                         />
-                                        <div className="h-80 w-full min-w-80 max-w-xl border-2">지도</div>
+                                        <div className="h-80 w-full min-w-80 max-w-xl border-2">
+                                            <Map />
+                                        </div>
                                         <Flex className="max-h-[150px] w-full min-w-80 max-w-xl flex-col overflow-y-scroll rounded-lg p-4 shadow-lg">
                                             {Array.from({ length: 5 }, (_, index) => (
                                                 <Card key={index} className="w-full border-none">
