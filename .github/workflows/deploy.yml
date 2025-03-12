@@ -1,9 +1,9 @@
-name: Deploy Next.js Application
+name: Deploy to Oracle Server
 
 on:
     push:
-        branches: [main]
-    workflow_dispatch:
+        branches:
+            - main
 
 jobs:
     build-and-deploy:
@@ -11,82 +11,40 @@ jobs:
 
         steps:
             - name: Checkout code
-              uses: actions/checkout@v3
+              uses: actions/checkout@v2
 
-            - name: Setup Node.js
-              uses: actions/setup-node@v3
+            - name: Set up Node.js
+              uses: actions/setup-node@v2
               with:
-                  node-version: '18'
+                  node-version: '22'
 
-            - name: Setup PNPM
-              uses: pnpm/action-setup@v2
-              with:
-                  version: 8
-                  run_install: false
-
-            - name: Get pnpm store directory
-              id: pnpm-cache
-              shell: bash
-              run: |
-                  echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-
-            - name: Setup pnpm cache
-              uses: actions/cache@v3
-              with:
-                  path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-                  key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-                  restore-keys: |
-                      ${{ runner.os }}-pnpm-store-
+            - name: Install pnpm
+              run: npm install -g pnpm
 
             - name: Install dependencies
               run: pnpm install
 
-            - name: Build Next.js application
-              run: pnpm build
+            - name: Build project
+              run: pnpm start:build
 
-            - name: Create deployment package
-              run: |
-                  mkdir -p deployment
-                  cp -r .next deployment/
-                  cp -r public deployment/
-                  cp package.json deployment/
-                  cp pnpm-lock.yaml deployment/
-                  cp next.config.js deployment/
-                  cp ecosystem.config.js deployment/
-
-            - name: Create .env file
-              run: |
-                  echo "NODE_ENV=production" > deployment/.env
-
-            - name: Compress deployment package
-              run: tar -czf deployment.tar.gz -C deployment .
-
-            - name: Deploy to Oracle Cloud
+            - name: Deploy to Oracle Server
               env:
                   HOST: ${{ secrets.ORACLE_HOST }}
                   USERNAME: ${{ secrets.ORACLE_USERNAME }}
                   SSH_KEY: ${{ secrets.ORACLE_SSH_KEY }}
               run: |
-                  # Save SSH key to file
-                  echo "$SSH_KEY" > ssh_key.pem
-                  chmod 600 ssh_key.pem
+                  # SSH 키 저장 및 권한 설정
+                  mkdir -p ~/.ssh
+                  echo "${SSH_KEY}" > ~/.ssh/id_rsa  
+                  chmod 600 ~/.ssh/id_rsa
 
-                  # Create deployment directory if it doesn't exist
-                  ssh -o StrictHostKeyChecking=no -i ssh_key.pem $USERNAME@$HOST "mkdir -p /home/travelhub/app"
+                  # 원격 서버에 배포 디렉토리 생성
+                  ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${USERNAME}@${HOST} "mkdir -p /home/${USERNAME}/app"
 
-                  # Copy deployment package to server
-                  scp -o StrictHostKeyChecking=no -i ssh_key.pem deployment.tar.gz $USERNAME@$HOST:/home/travelhub/app/
+                  # 서버로 파일 전송 및 배포
+                  rsync -avz -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ./.next/ ${USERNAME}@${HOST}:/home/${USERNAME}/app/
+                  rsync -avz -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" package.json ${USERNAME}@${HOST}:/home/${USERNAME}/app/
+                  rsync -avz -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" node_modules/ ${USERNAME}@${HOST}:/home/${USERNAME}/app/
 
-                  # Extract and deploy
-                  ssh -o StrictHostKeyChecking=no -i ssh_key.pem $USERNAME@$HOST << 'EOF'
-                    cd /home/travelhub/app
-                    tar -xzf deployment.tar.gz
-                    rm deployment.tar.gz
-                    
-                    # Install dependencies
-                    export PATH="$HOME/.local/share/pnpm:$PATH"
-                    pnpm install --prod
-                    
-                    # Restart PM2 application
-                    pm2 reload ecosystem.config.js || pm2 start ecosystem.config.js
-                  EOF
+                  # 보안상 키 삭제
+                  rm -f ~/.ssh/id_rsa
