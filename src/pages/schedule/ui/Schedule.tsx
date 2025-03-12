@@ -15,7 +15,6 @@ import {
     Button,
     Calendar,
     Card,
-    CardContent,
     CustomEditor,
     CustomTabs,
     Flex,
