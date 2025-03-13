@@ -8,7 +8,6 @@ import React from 'react'
 import { DateRange } from 'react-day-picker'
 
 import { SearchBar } from '@/features/search'
-import { stepList } from '@/pages/schedule/config/const'
 import { cn } from '@/shared/lib/utils'
 import {
     Box,
@@ -27,6 +26,7 @@ import {
     StepperWrapper,
     Typography,
 } from '@/shared/ui'
+import { stepList } from '@/views/schedule/config/const'
 import Map from '@/widgets/Map'
 
 import eiffel from '../../../../public/eiffel.jpg'
