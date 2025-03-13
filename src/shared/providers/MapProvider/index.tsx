@@ -1,14 +1,13 @@
 'use client'
 
-import { LoadScript, LoadScriptNext } from '@react-google-maps/api'
-import { ReactNode } from 'react'
+import { LoadScriptNext } from '@react-google-maps/api'
 
 import { DefaultValue } from '@/shared/config/consts'
 
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || DefaultValue.BLANK
 
 interface MapProviderProps {
-    children: ReactNode
+    children: React.ReactElement
 }
 
 export function MapProvider({ children }: MapProviderProps) {
