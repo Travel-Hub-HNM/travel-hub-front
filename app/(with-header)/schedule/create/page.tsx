@@ -1,5 +1,5 @@
 // 일정 만들기
-import { Schedule } from '@/pages/schedule'
+import { Schedule } from '@/views/schedule'
 
 const CreateSchedulePage = () => <Schedule />
 

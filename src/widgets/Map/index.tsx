@@ -1,20 +1,10 @@
 'use client'
 
-import { GoogleMap, LoadScript, Marker, MarkerF, InfoWindowF, MarkerClustererF } from '@react-google-maps/api'
-import { Star } from 'lucide-react'
+import { GoogleMap, MarkerF } from '@react-google-maps/api'
 import Image from 'next/image'
 import React from 'react'
 
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
     Button,
     Dialog,
     DialogContent,
@@ -23,7 +13,6 @@ import {
     DialogHeader,
     DialogTitle,
     Flex,
-    Typography,
 } from '@/shared/ui'
 
 import eiffel from '../../../public/eiffel.jpg'
@@ -86,7 +75,7 @@ const Map = () => {
                     position={location}
                     onClick={(e) => {
                         console.log(location)
-                        setSelectedMarker({ lat: location.lat, lng: location.lng })
+                        // setSelectedMarker({ lat: location.lat, lng: location.lng })
                     }}
                 />
             ))}
@@ -133,13 +122,13 @@ const Map = () => {
                                     src={eiffel}
                                     alt="Location"
                                     // layout="fill"
-                                    width="100%"
-                                    height="100%"
+                                    // width="100%"
+                                    // height="100%"
                                     objectFit="cover"
                                     className="rounded-sm"
                                 />
                                 <DialogDescription>
-                                    장소 설명 위도: {selectedMarker?.lat} 경도: {selectedMarker?.lng}
+                                    {/* 장소 설명 위도: {selectedMarker?.lat} 경도: {selectedMarker?.lng} */}
                                 </DialogDescription>
                             </Flex>
                         </DialogHeader>
