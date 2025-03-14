@@ -28,6 +28,7 @@ jobs:
               run: |
                   mkdir -p /tmp/docker
                   docker save -o /tmp/docker/travel-hub-fe.tar ${{ secrets.DOCKER_USERNAME }}/travel-hub-fe:${{ steps.tag.outputs.image_tag }}
+                  docker save -o /tmp/docker/travel-hub-fe-latest.tar ${{ secrets.DOCKER_USERNAME }}/travel-hub-fe:latest
 
             - name: Save Docker Image (Artifacts)
               uses: actions/upload-artifact@v4
