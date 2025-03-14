@@ -26,4 +26,4 @@ COPY --from=builder /app/node_modules node_modules
 EXPOSE 3000
 
 # Next.js 실행
-CMD ["node", "node_modules/.bin/next", "start"]
+CMD ["pnpm", "start:prod"]

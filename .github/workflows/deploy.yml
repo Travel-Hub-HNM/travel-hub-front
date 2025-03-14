@@ -74,11 +74,11 @@ jobs:
                   key: ${{ secrets.ORACLE_SSH_KEY }}
                   script: |
                       # Stop and Remove Existing Container
-                      docker stop travel-hub-fe-container || true
-                      docker rm travel-hub-fe-container || true
+                      docker stop travel-hub-fe || true
+                      docker rm travel-hub-fe || true
 
                       # Pull Latest Docker Image
                       docker pull ${{ secrets.DOCKER_USERNAME }}/travel-hub-fe:${{ needs.build.outputs.image_tag }}
 
                       # Run New Container
-                      docker run -d --name travel-hub-fe-container -p 9599:3000 ${{ secrets.DOCKER_USERNAME }}/travel-hub-fe:${{ needs.build.outputs.image_tag }}
+                      docker run -d --name travel-hub-fe -p 9599:3000 ${{ secrets.DOCKER_USERNAME }}/travel-hub-fe:${{ needs.build.outputs.image_tag }}
