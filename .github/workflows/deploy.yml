@@ -81,4 +81,4 @@ jobs:
                       docker pull ${{ secrets.DOCKER_USERNAME }}/travel-hub-fe:${{ needs.build.outputs.image_tag }}
 
                       # Run New Container
-                      docker run -d --name travel-hub-fe -p 9599:3000 ${{ secrets.DOCKER_USERNAME }}/travel-hub-fe:${{ needs.build.outputs.image_tag }}
+                      docker run --platform linux/amd64 -d --name travel-hub-fe -p 9599:3000 ${{ secrets.DOCKER_USERNAME }}/travel-hub-fe:${{ needs.build.outputs.image_tag }}
