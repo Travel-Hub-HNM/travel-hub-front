@@ -38,8 +38,11 @@ jobs:
                   echo "${SSH_KEY}" > ~/.ssh/id_rsa  
                   chmod 600 ~/.ssh/id_rsa
 
-                  # 원격 서버에 배포 디렉토리 생성
-                  ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${USERNAME}@${HOST} "mkdir -p /home/${USERNAME}/app"
+                  # 원격 서버에 배포 디렉토리 생성 (상세 경로 확인 및 생성)
+                  ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${USERNAME}@${HOST} "sudo mkdir -p /home/${USERNAME} && sudo chown ${USERNAME}:${USERNAME} /home/${USERNAME} && mkdir -p /home/${USERNAME}/app"
+
+                  # 디렉토리 생성 확인
+                  ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${USERNAME}@${HOST} "ls -la /home/ && ls -la /home/${USERNAME}/"
 
                   # 필요한 파일만 서버로 전송
                   rsync -avz -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ./.next/ ${USERNAME}@${HOST}:/home/${USERNAME}/app/.next/
@@ -49,9 +52,6 @@ jobs:
                   if [ -d "public" ]; then
                     rsync -avz -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ./public/ ${USERNAME}@${HOST}:/home/${USERNAME}/app/public/
                   fi
-
-                  # 서버에서 직접 프로덕션 의존성 설치 (node_modules 전송 대신)
-                  ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${USERNAME}@${HOST} "cd /home/${USERNAME}/app && pnpm install --omit=dev"
 
                   # 서버에서 애플리케이션 재시작 (PM2 사용 예시)
                   ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${USERNAME}@${HOST} "cd /home/${USERNAME}/app && pm2 restart nextjs || pm2 start npm --name 'nextjs' -- start"
