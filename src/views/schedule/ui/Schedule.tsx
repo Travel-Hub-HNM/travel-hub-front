@@ -14,6 +14,7 @@ import {
     Button,
     Calendar,
     Card,
+    CardContent,
     CustomEditor,
     CustomTabs,
     Flex,
@@ -26,10 +27,11 @@ import {
     StepperWrapper,
     Typography,
 } from '@/shared/ui'
-import { stepList } from '@/views/schedule/config/const'
 import Map from '@/widgets/Map'
 
 import eiffel from '../../../../public/eiffel.jpg'
+
+import { stepList } from '@/pages/schedule/config/const'
 
 const Schedule = () => {
     const [date, setDate] = React.useState<DateRange | undefined>({
