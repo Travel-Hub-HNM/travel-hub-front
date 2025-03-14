@@ -38,6 +38,9 @@ jobs:
                   echo "${SSH_KEY}" > ~/.ssh/id_rsa  
                   chmod 600 ~/.ssh/id_rsa
 
+                  # 필요한 디렉토리에 권한 부여
+                  ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${USERNAME}@${HOST} "chmod -R 755 /home/travelhub/app || mkdir -p /home/travelhub/app && chmod -R 755 /home/travelhub/app"
+
                   # 필요한 파일만 서버로 전송 (하드코딩된 경로)
                   rsync -avz -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ./.next/ ${USERNAME}@${HOST}:/home/travelhub/app/.next/
                   rsync -avz -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" package.json pnpm-lock.yaml next.config.js ${USERNAME}@${HOST}:/home/travelhub/app/
