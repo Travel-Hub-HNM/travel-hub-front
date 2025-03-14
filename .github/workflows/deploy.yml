@@ -43,6 +43,8 @@ jobs:
 
                   # 서버로 파일 전송 및 배포
                   rsync -avz -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ./.next/ ${USERNAME}@${HOST}:/home/${USERNAME}/app/
+                  rsync -avz -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" package.json ${USERNAME}@${HOST}:/home/${USERNAME}/app/
+                  rsync -avz -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" node_modules/ ${USERNAME}@${HOST}:/home/${USERNAME}/app/
 
                   # 보안상 키 삭제
                   rm -f ~/.ssh/id_rsa

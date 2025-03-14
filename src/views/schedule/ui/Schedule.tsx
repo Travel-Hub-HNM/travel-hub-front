@@ -8,7 +8,6 @@ import React from 'react'
 import { DateRange } from 'react-day-picker'
 
 import { SearchBar } from '@/features/search'
-import { stepList } from '@/pages/schedule/config/const'
 import { cn } from '@/shared/lib/utils'
 import {
     Box,
@@ -31,6 +30,8 @@ import {
 import Map from '@/widgets/Map'
 
 import eiffel from '../../../../public/eiffel.jpg'
+
+import { stepList } from '@/pages/schedule/config/const'
 
 const Schedule = () => {
     const [date, setDate] = React.useState<DateRange | undefined>({
