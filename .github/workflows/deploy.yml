@@ -17,6 +17,13 @@ jobs:
                   npm install -g pnpm
                   pnpm install --frozen-lockfile
 
+            - name: Check SSH Connection
+              run: |
+                  mkdir -p ~/.ssh
+                  echo "${{ secrets.ORACLE_SSH_KEY }}" > ~/.ssh/id_rsa
+                  chmod 600 ~/.ssh/id_rsa
+                  ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.ORACLE_USERNAME }}@${{ secrets.ORACLE_HOST }} "echo 'SSH connection successful'"
+
             - name: Deploy to Server
               uses: appleboy/scp-action@v0.1.0
               with:
