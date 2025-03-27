@@ -23,6 +23,7 @@ jobs:
                   host: ${{ secrets.ORACLE_HOST }}
                   username: ${{ secrets.ORACLE_USERNAME }}
                   key: ${{ secrets.ORACLE_SSH_KEY }}
+                  key_path: ${{ secrets.ORACLE_SSH_KEY_PATH }}
                   source: '.'
                   target: ${{ secrets.DEPLOY_PATH }}
 
@@ -32,6 +33,7 @@ jobs:
                   host: ${{ secrets.ORACLE_HOST }}
                   username: ${{ secrets.ORACLE_USERNAME }}
                   key: ${{ secrets.ORACLE_SSH_KEY }}
+                  key_path: ${{ secrets.ORACLE_SSH_KEY_PATH }}
                   script: |
                       cd ${{ secrets.DEPLOY_PATH }}
                       pnpm install --frozen-lockfile
