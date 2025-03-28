@@ -8,6 +8,7 @@ import React from 'react'
 import { DateRange } from 'react-day-picker'
 
 import { SearchBar } from '@/features/search'
+import Eiffel from '@/shared/assets/img/Eiffel.jpg'
 import { cn } from '@/shared/lib/utils'
 import {
     Box,
@@ -28,8 +29,6 @@ import {
 } from '@/shared/ui'
 import { stepList } from '@/views/schedule/config/const'
 import Map from '@/widgets/Map'
-
-import eiffel from '../../../../public/eiffel.jpg'
 
 const Schedule = () => {
     const [date, setDate] = React.useState<DateRange | undefined>({
@@ -123,7 +122,7 @@ const Schedule = () => {
                                                     <Flex className="flex-wrap">
                                                         <div className="relative m-3 h-[100px] w-[100px]">
                                                             <Image
-                                                                src={eiffel}
+                                                                src={Eiffel}
                                                                 alt="Location"
                                                                 layout="fill"
                                                                 objectFit="cover"
