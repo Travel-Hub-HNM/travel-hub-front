@@ -4,6 +4,7 @@ import { GoogleMap, MarkerF } from '@react-google-maps/api'
 import Image from 'next/image'
 import React from 'react'
 
+import Eiffel from '@/shared/assets/img/Eiffel.jpg'
 import {
     Button,
     Dialog,
@@ -14,8 +15,6 @@ import {
     DialogTitle,
     Flex,
 } from '@/shared/ui'
-
-import eiffel from '../../../public/eiffel.jpg'
 
 const containerStyle = {
     width: '100%',
@@ -119,7 +118,7 @@ const Map = () => {
                             <DialogTitle>장소명</DialogTitle>
                             <Flex className="flex-col">
                                 <Image
-                                    src={eiffel}
+                                    src={Eiffel}
                                     alt="Location"
                                     // layout="fill"
                                     // width="100%"
