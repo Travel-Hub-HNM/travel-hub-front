@@ -1,3 +1,5 @@
-const MainPage = () => <div>test</div>
+import { Main } from '@/views/main'
+
+const MainPage = () => <Main />
 
 export default MainPage
