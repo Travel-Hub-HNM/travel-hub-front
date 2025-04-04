@@ -34,6 +34,15 @@ jobs:
                   key: ${{ secrets.ORACLE_SSH_KEY }}
                   script: |
                       cd ${{ secrets.DEPLOY_PATH }}
+                      npm install -g pm2
                       pnpm install --frozen-lockfile
                       pnpm start:build
-                      pnpm start:prod
+
+                      if pm2 describe travel-hub-front > /dev/null 2>&1; then
+                          echo "Start reload travel-hub-front"
+                          pm2 reload ecosystem.config.js --update-env
+                      else
+                          echo "Start new process travel-hub-front"
+                          pm2 start ecosystem.config.js
+                      fi
+                      pm2 save
