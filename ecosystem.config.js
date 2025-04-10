@@ -2,12 +2,13 @@ module.exports = {
     apps: [
         {
             name: 'travel-hub-front',
-            script: 'pnpm start:prod',
+            script: 'pnpm',
+            args: 'start:prod',
             env: {
                 NODE_ENV: 'production',
             },
             instances: 1,
-            exec_mode: 'cluster',
+            exec_mode: 'fork',
             max_memory_restart: '1G',
             autorestart: true,
             max_restarts: 10,
