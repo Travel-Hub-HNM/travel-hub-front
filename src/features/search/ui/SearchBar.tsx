@@ -49,4 +49,4 @@ const SearchBar = ({ placeholder, onSearch, className }: ISearchBarProps) => {
     )
 }
 
-export default SearchBar
+export { SearchBar }
