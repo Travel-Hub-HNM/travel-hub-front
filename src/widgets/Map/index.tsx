@@ -14,7 +14,9 @@ import {
     DialogHeader,
     DialogTitle,
     Flex,
+    Typography,
 } from '@/shared/ui'
+import CustomModal from '@/shared/ui/CustomModal'
 
 const containerStyle = {
     width: '100%',
@@ -74,7 +76,7 @@ const Map = () => {
                     position={location}
                     onClick={(e) => {
                         console.log(location)
-                        // setSelectedMarker({ lat: location.lat, lng: location.lng })
+                        setSelectedMarker({ lat: location.lat, lng: location.lng })
                     }}
                 />
             ))}
@@ -88,55 +90,33 @@ const Map = () => {
                 // >
                 //     <div>dd</div>
                 // </InfoWindowF>
-                // <AlertDialog open={!!selectedMarker}>
-                //     <AlertDialogContent>
-                //         <AlertDialogHeader>
-                //             <AlertDialogTitle>장소명</AlertDialogTitle>
-                //             <Flex className="flex-col">
-                //                 <Image
-                //                     src={eiffel}
-                //                     alt="Location"
-                //                     // layout="fill"
-                //                     width="100%"
-                //                     height="100%"
-                //                     objectFit="cover"
-                //                     className="rounded-sm"
-                //                 />
-                //                 <AlertDialogDescription>
-                //                     장소 설명 위도: {selectedMarker?.lat} 경도: {selectedMarker?.lng}
-                //                 </AlertDialogDescription>
-                //             </Flex>
-                //         </AlertDialogHeader>
-                //         <AlertDialogFooter>
-                //             <AlertDialogCancel onClick={() => setSelectedMarker(null)}>닫기</AlertDialogCancel>
-                //         </AlertDialogFooter>
-                //     </AlertDialogContent>
-                // </AlertDialog>
-                <Dialog open={!!selectedMarker} onOpenChange={() => setSelectedMarker(null)}>
-                    <DialogContent className="sm:max-w-[425px]">
-                        <DialogHeader>
-                            <DialogTitle>장소명</DialogTitle>
-                            <Flex className="flex-col">
-                                <Image
-                                    src={Eiffel}
-                                    alt="Location"
-                                    // layout="fill"
-                                    // width="100%"
-                                    // height="100%"
-                                    objectFit="cover"
-                                    className="rounded-sm"
-                                />
-                                <DialogDescription>
-                                    {/* 장소 설명 위도: {selectedMarker?.lat} 경도: {selectedMarker?.lng} */}
-                                </DialogDescription>
+                <CustomModal
+                    open={!!selectedMarker}
+                    onOpenChange={() => setSelectedMarker(null)}
+                    title="파리"
+                    subTitle="Paris"
+                    contents={
+                        <>
+                            <Image
+                                src={Eiffel}
+                                alt="Location"
+                                // layout="fill"
+                                width="100%"
+                                height="100%"
+                                objectFit="cover"
+                                className="rounded-sm"
+                            />
+                            <Flex>
+                                <Typography>
+                                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem
+                                    Ipsum has been the industry's standard dummy text ever since the 1500s, when an
+                                    unknown printer took a galley of type and scrambled it to make a type specimen book.
+                                </Typography>
                             </Flex>
-                        </DialogHeader>
-
-                        <DialogFooter>
-                            <Button onClick={() => setSelectedMarker(null)}>닫기</Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
+                        </>
+                    }
+                    footer={<Button onClick={() => setSelectedMarker(null)}>닫기</Button>}
+                />
             )}
         </GoogleMap>
     )
