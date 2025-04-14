@@ -17,7 +17,6 @@ import {
     Button,
     Calendar,
     Card,
-    CardContent,
     Carousel,
     CarouselContent,
     CarouselItem,
@@ -40,7 +39,7 @@ import Map from '@/widgets/Map'
 
 // const CustomEditor = dynamic(() => import('@/shared/ui/CustomEditor'), { ssr: false })
 
-const Schedule = () => {
+export const Schedule = () => {
     const editorRefs = React.useRef<(Editor | null)[]>([])
 
     const [date, setDate] = React.useState<DateRange | undefined>({
@@ -375,5 +374,3 @@ const Schedule = () => {
         </Box>
     )
 }
-
-export default Schedule
