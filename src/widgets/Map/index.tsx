@@ -4,6 +4,7 @@ import { GoogleMap, MarkerF } from '@react-google-maps/api'
 import Image from 'next/image'
 import React from 'react'
 
+import Eiffel from '@/shared/assets/img/Eiffel.jpg'
 import {
     Button,
     Dialog,
@@ -16,8 +17,6 @@ import {
     Typography,
 } from '@/shared/ui'
 import CustomModal from '@/shared/ui/CustomModal'
-
-import eiffel from '../../../public/eiffel.jpg'
 
 const containerStyle = {
     width: '100%',
@@ -99,7 +98,7 @@ const Map = () => {
                     contents={
                         <>
                             <Image
-                                src={eiffel}
+                                src={Eiffel}
                                 alt="Location"
                                 // layout="fill"
                                 width="100%"

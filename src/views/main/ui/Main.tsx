@@ -1,8 +1,13 @@
 'use client'
 
+import dynamic from 'next/dynamic'
+
 import SearchBar from '@/features/search/ui/SearchBar'
-import { Box, CardList, CustomTabs } from '@/shared/ui'
-import Heading from '@/shared/ui/Heading'
+
+const Box = dynamic(() => import('@/shared/ui/Box').then((mod) => mod.Box), { ssr: false })
+const CardList = dynamic(() => import('@/shared/ui/CardList').then((mod) => mod.CardList), { ssr: false })
+const CustomTabs = dynamic(() => import('@/shared/ui/CustomTabs').then((mod) => mod.CustomTabs), { ssr: false })
+const Heading = dynamic(() => import('@/shared/ui/Heading').then((mod) => mod.default), { ssr: false })
 
 const Main = () => {
     const handleSearch = (query: string) => {

@@ -1,4 +1,4 @@
-name: Deploy to Oracle Server
+name: Deploy to Server
 
 on:
     push:
@@ -6,84 +6,43 @@ on:
             - main
 
 jobs:
-    build-and-deploy:
+    deploy:
         runs-on: ubuntu-latest
-
         steps:
-            - name: Checkout code
-              uses: actions/checkout@v2
+            - name: Checkout
+              uses: actions/checkout@v4
 
-            - name: Set up Node.js
-              uses: actions/setup-node@v2
-              with:
-                  node-version: '22'
-
-            - name: Install pnpm
-              run: npm install -g pnpm
-
-            - name: Install dependencies
-              run: pnpm install
-
-            - name: Build project
-              run: pnpm start:build
-
-            - name: Deploy to Oracle Server
-              env:
-                  HOST: ${{ secrets.ORACLE_HOST }}
-                  USERNAME: ${{ secrets.ORACLE_USERNAME }}
-                  SSH_KEY: ${{ secrets.ORACLE_SSH_KEY }}
+            - name: Install Dependencies
               run: |
-                  # SSH 키 저장 및 권한 설정
-                  mkdir -p ~/.ssh
-                  echo "${SSH_KEY}" > ~/.ssh/id_rsa  
-                  chmod 600 ~/.ssh/id_rsa
+                  npm install -g pnpm
+                  pnpm install --frozen-lockfile
 
-                  # 원격 서버에 배포 디렉토리 생성 (하드코딩된 경로)
-                  ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${USERNAME}@${HOST} "sudo mkdir -p /home/travelhub && sudo chown travelhub:travelhub /home/travelhub && mkdir -p /home/travelhub/app"
+            - name: Deploy to Server
+              uses: appleboy/scp-action@v0.1.0
+              with:
+                  host: ${{ secrets.ORACLE_HOST }}
+                  username: ${{ secrets.ORACLE_USERNAME }}
+                  key: ${{ secrets.ORACLE_SSH_KEY }}
+                  source: '.'
+                  target: ${{ secrets.DEPLOY_PATH }}
 
-                  # 디렉토리 생성 확인
-                  ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${USERNAME}@${HOST} "ls -la /home/ && ls -la /home/travelhub/"
+            - name: SSH Connect and Build
+              uses: appleboy/ssh-action@v1.0.3
+              with:
+                  host: ${{ secrets.ORACLE_HOST }}
+                  username: ${{ secrets.ORACLE_USERNAME }}
+                  key: ${{ secrets.ORACLE_SSH_KEY }}
+                  script: |
+                      cd ${{ secrets.DEPLOY_PATH }}
+                      npm install -g pm2
+                      pnpm install --frozen-lockfile
+                      pnpm start:build
 
-                  # 필요한 파일만 서버로 전송 (하드코딩된 경로)
-                  rsync -avz -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ./.next/ ${USERNAME}@${HOST}:/home/travelhub/app/.next/
-                  rsync -avz -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" package.json pnpm-lock.yaml next.config.js ${USERNAME}@${HOST}:/home/travelhub/app/
-
-                  # public 폴더가 있다면 전송 (하드코딩된 경로)
-                  if [ -d "public" ]; then
-                    rsync -avz -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ./public/ ${USERNAME}@${HOST}:/home/travelhub/app/public/
-                  fi
-
-                  # 서버에 pnpm 및 PM2 설치 확인 및 필요시 설치
-                  ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${USERNAME}@${HOST} "npm list -g pnpm || npm install -g pnpm"
-                  ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${USERNAME}@${HOST} "npm list -g pm2 || npm install -g pm2"
-
-                  # PM2 ecosystem 파일 생성 및 전송 (pnpm 사용)
-                  cat > ecosystem.config.js << EOF
-                  module.exports = {
-                    apps: [{
-                      name: 'nextjs',
-                      script: 'pnpm',
-                      args: 'start',
-                      cwd: '/home/travelhub/app',
-                      instances: 1,
-                      autorestart: true,
-                      watch: false,
-                      max_memory_restart: '1G',
-                      env: {
-                        NODE_ENV: 'production',
-                        PORT: 3000
-                      }
-                    }]
-                  };
-                  EOF
-
-                  rsync -avz -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ecosystem.config.js ${USERNAME}@${HOST}:/home/travelhub/app/
-
-                  # 서버에서 의존성 설치 (pnpm 사용)
-                  ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${USERNAME}@${HOST} "cd /home/travelhub/app && pnpm install --prod"
-
-                  # 서버에서 애플리케이션 재시작 (PM2 사용, pnpm으로 실행)
-                  ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${USERNAME}@${HOST} "cd /home/travelhub/app && pm2 delete nextjs || true && pm2 start ecosystem.config.js && pm2 save"
-
-                  # 보안상 키 삭제
-                  rm -f ~/.ssh/id_rsa
+                      if pm2 describe travel-hub-front > /dev/null 2>&1; then
+                          echo "Start reload travel-hub-front"
+                          pm2 reload ecosystem.config.js --update-env
+                      else
+                          echo "Start new process travel-hub-front"
+                          pm2 start ecosystem.config.js
+                      fi
+                      pm2 save
