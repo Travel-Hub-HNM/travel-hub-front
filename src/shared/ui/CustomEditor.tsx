@@ -9,18 +9,10 @@ import '@toast-ui/editor/dist/toastui-editor.css'
 import '@toast-ui/editor/dist/theme/toastui-editor-dark.css'
 
 export const CustomEditor = ({ index, editorRef }) => {
-    const localRef = React.useRef<Editor>(null)
-
-    React.useEffect(() => {
-        if (editorRef && localRef.current) {
-            editorRef(localRef.current)
-        }
-    }, [editorRef])
-
     return (
         <div key={index} className="w-full">
             <Editor
-                ref={localRef}
+                ref={editorRef}
                 initialEditType="wysiwyg"
                 hideModeSwitch={true}
                 placeholder="내용을 입력해 주세요."

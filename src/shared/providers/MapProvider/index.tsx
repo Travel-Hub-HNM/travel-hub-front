@@ -1,6 +1,7 @@
 'use client'
 
 import { LoadScriptNext } from '@react-google-maps/api'
+import React from 'react'
 
 import { DefaultValue } from '@/shared/config/consts'
 
