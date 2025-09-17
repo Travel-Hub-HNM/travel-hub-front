@@ -1,0 +1,40 @@
+{
+  "list": [
+    {
+      "pcId": "ChIJa-NIFgCjfDURU3mD1H9PKdc",
+      "pcName": "서울역",
+      "pcImg": "",
+      "pcAddress": "대한민국 서울특별시 서울 역앞",
+      "pcRating": 4.8,
+      "pcLng": 126.9729426,
+      "pcLat": 37.5542029
+    },
+    {
+      "pcId": "ChIJp67IMGeifDURYdGoC7xacH0",
+      "pcName": "서울역",
+      "pcImg": "",
+      "pcAddress": "대한민국 서울특별시 동자동",
+      "pcRating": 4.4,
+      "pcLng": 126.973868,
+      "pcLat": 37.553577
+    },
+    {
+      "pcId": "ChIJWWTtJmGifDURBkbUop_9nL0",
+      "pcName": "서울역 버스 환승센터",
+      "pcImg": "",
+      "pcAddress": "대한민국 서울특별시",
+      "pcRating": 4.6,
+      "pcLng": 126.9726675,
+      "pcLat": 37.5552915
+    },
+    {
+      "pcId": "ChIJoUFnlGGifDURS1b7LQvcv3I",
+      "pcName": "서울역",
+      "pcImg": "",
+      "pcAddress": "대한민국 서울특별시 봉래동1가",
+      "pcRating": 3,
+      "pcLng": 126.971354,
+      "pcLat": 37.55821299999999
+    }
+  ]
+}

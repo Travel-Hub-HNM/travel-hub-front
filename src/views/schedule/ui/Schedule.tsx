@@ -1,185 +1,114 @@
 'use client'
 
-import { format } from 'date-fns'
-import { ko } from 'date-fns/locale'
-import { CalendarIcon, Star } from 'lucide-react'
-import Image from 'next/image'
+import { Editor } from '@toast-ui/react-editor'
+import { isEmpty } from 'lodash'
 import React from 'react'
 import { DateRange } from 'react-day-picker'
 
-import { SearchBar } from '@/features/search'
-import Eiffel from '@/shared/assets/img/Eiffel.jpg'
-import { cn } from '@/shared/lib/utils'
-import {
-    Box,
-    Button,
-    Calendar,
-    Card,
-    CustomEditor,
-    CustomTabs,
-    Flex,
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-    Stepper,
-    StepperContent,
-    StepperFooter,
-    StepperWrapper,
-    Typography,
-} from '@/shared/ui'
-import { stepList } from '@/views/schedule/config/const'
-import Map from '@/widgets/Map'
+import { useImageUploadQuery } from '@/shared/api/endpoints/image'
+import { useForm } from '@/shared/hooks/useForm'
+import { Box, Button, CustomEditor, Stepper, StepperContent, StepperFooter, StepperWrapper } from '@/shared/ui'
+import { defaultValue, stepList } from '@/views/schedule/config/const'
+import { SCHEDULE_API_KEY } from '@/views/schedule/model/apiKeys'
+import ContentEditor from '@/views/schedule/ui/parts/ContentEditor'
+import DateSelector from '@/views/schedule/ui/parts/DateSelector'
+import LocationSelector from '@/views/schedule/ui/parts/LocationSelector'
 
-const Schedule = () => {
-    const [date, setDate] = React.useState<DateRange | undefined>({
-        from: new Date(),
-        to: new Date(),
-    })
+// const CustomEditor = dynamic(() => import('@/shared/ui/CustomEditor'), { ssr: false })
+
+export const Schedule = () => {
+    const { data: form, handleChange } = useForm({ key: SCHEDULE_API_KEY.ROOT, defaultValues: defaultValue })
+    const { mutate: uploadImage, isLoading } = useImageUploadQuery.upload({ igType: 'CT' })
+
+    const editorRefs = React.useRef<Editor[] | []>([])
 
     const [currentStep, setCurrentStep] = React.useState(0)
 
     const handleNext = React.useCallback(() => {
+        // const currentEditor = editorRefs.current[form?.currentEditPlace]
+        // 등록
+        if (currentStep === stepList.length - 1) {
+            // 이미지 등록 후, 응답값을 places.images 에 넣는다.
+
+            // if (currentEditor) {
+
+            const imagesPayload = form?.images?.reduce(
+                (acc, fileArr, index) => {
+                    const order = index + 1
+                    acc[order] = fileArr
+                    return acc
+                },
+                {} as Record<number, File[]>,
+            )
+
+            const formData = new FormData()
+            Object.entries(imagesPayload).forEach(([order, files]) => {
+                files.forEach((file) => formData.append(order, file))
+            })
+
+            uploadImage(formData, {
+                onSuccess: (res) => {
+                    console.log('✅ 업로드 성공', res)
+                    const contents = editorRefs.current.map((editor, index) => {
+                        return {
+                            cpOrder: index + 1,
+                            pcId: form?.places?.[index].pcId,
+                            cpText: editor?.getInstance().getHTML() || '',
+                            cpType: 'M',
+                            images: res?.data?.[index],
+                        }
+                    })
+
+                    const postdata = {
+                        ctTitle: form.ctTitle,
+                        ctStartTime: form.date.from,
+                        ctEndTime: form.date.to,
+                        tags: form.tags,
+                        places: contents,
+                    }
+
+                    console.log('post 데이터:', postdata)
+                },
+                onError: (err) => {
+                    console.error('❌ 업로드 실패', err)
+                },
+            })
+
+            console.log(imagesPayload)
+            console.log(formData)
+
+            // }
+        }
         setCurrentStep((prev) => Math.min(prev + 1, stepList.length - 1))
-    }, [])
+    }, [form, currentStep, editorRefs])
 
     const handlePrevious = React.useCallback(() => {
         setCurrentStep((prev) => Math.max(prev - 1, 0))
     }, [])
 
     return (
-        <Box className="flex-col">
+        <Box className="flex-col p-0">
             <StepperWrapper>
                 <Stepper steps={stepList} currentStep={currentStep} />
                 <StepperFooter>
                     <Button onClick={handlePrevious} disabled={currentStep === 0} variant="outline">
                         이전
                     </Button>
-                    <Button
-                        onClick={handleNext}
-                        // disabled={currentStep === stepList.length - 1}
-                    >
+                    <Button onClick={handleNext} disabled={currentStep === 1 && isEmpty(form?.places)}>
                         {currentStep === stepList.length - 1 ? '등록' : '다음'}
                     </Button>
                 </StepperFooter>
-                <StepperContent currentStep={currentStep}>
-                    {/*AIzaSyCRbKc8-K2XlJE885qAVsZDGeNq19Wxgvs*/}
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            {/*<Flex className="min-w-80 max-w-xl flex-wrap justify-center">*/}
-                            <Button
-                                id="date"
-                                variant="outline"
-                                className={cn(
-                                    'h-full w-full flex-wrap justify-start text-left font-normal',
-                                    !date && 'text-muted-foreground',
-                                )}
-                            >
-                                <CalendarIcon />
-                                {date?.from ? (
-                                    date.to ? (
-                                        <Typography>
-                                            {format(date.from, 'yyyy년 MM월 dd일', { locale: ko })} -{' '}
-                                            {format(date.to, 'yyyy년 MM월 dd일', { locale: ko })}
-                                        </Typography>
-                                    ) : (
-                                        <Typography>{format(date.from, 'yyyy년 MM월 dd일')}</Typography>
-                                    )
-                                ) : (
-                                    <span>Pick a date</span>
-                                )}
-                            </Button>
-                            {/*</Flex>*/}
-                        </PopoverTrigger>
-                        <PopoverContent className="b w-auto p-0" align="start">
-                            <Calendar
-                                initialFocus
-                                mode="range"
-                                defaultMonth={date?.from}
-                                selected={date}
-                                onSelect={setDate}
-                                numberOfMonths={2}
-                                className=""
-                            />
-                        </PopoverContent>
-                    </Popover>
-                    <CustomTabs
-                        defaultValue="locale"
-                        options={[
-                            {
-                                value: 'locale',
-                                label: '장소 선택',
-                                content: (
-                                    <Box className="w-full flex-col">
-                                        <SearchBar
-                                            placeholder="장소명을 입력하세요"
-                                            onSearch={(value) => {
-                                                console.log(value)
-                                            }}
-                                        />
-                                        <Flex className="max-h-[300px] w-full min-w-80 max-w-xl flex-col overflow-y-scroll rounded-lg p-4 shadow-lg">
-                                            {Array.from({ length: 5 }, (_, index) => (
-                                                <Card key={index} className="w-full border-none">
-                                                    <Flex className="flex-wrap">
-                                                        <div className="relative m-3 h-[100px] w-[100px]">
-                                                            <Image
-                                                                src={Eiffel}
-                                                                alt="Location"
-                                                                layout="fill"
-                                                                objectFit="cover"
-                                                                className="rounded-sm"
-                                                            />
-                                                        </div>
-                                                        <Flex className="flex-col items-start">
-                                                            <Typography>주소</Typography>
-                                                            <Flex>
-                                                                <Star className="h-3 w-3 fill-current text-yellow-400" />
-                                                                <Typography>4.5</Typography>
-                                                            </Flex>
-                                                        </Flex>
-                                                    </Flex>
-                                                </Card>
-                                            ))}
-                                        </Flex>
-                                    </Box>
-                                ),
-                            },
-                            {
-                                value: 'newLocale',
-                                label: '나의 장소 등록',
-                                content: (
-                                    <Box className="w-full flex-col">
-                                        <SearchBar
-                                            placeholder="상호명 또는 주소를 입력하세요"
-                                            onSearch={(value) => {
-                                                console.log(value)
-                                            }}
-                                        />
-                                        <div className="h-80 w-full min-w-80 max-w-xl border-2">
-                                            <Map />
-                                        </div>
-                                        <Flex className="max-h-[150px] w-full min-w-80 max-w-xl flex-col overflow-y-scroll rounded-lg p-4 shadow-lg">
-                                            {Array.from({ length: 5 }, (_, index) => (
-                                                <Card key={index} className="w-full border-none">
-                                                    <Flex className="flex-wrap items-center justify-between p-3">
-                                                        <Flex className="flex-col">
-                                                            <Typography>상호명</Typography>
-                                                            <Typography>주소</Typography>
-                                                        </Flex>
-                                                        <Button>등록</Button>
-                                                    </Flex>
-                                                </Card>
-                                            ))}
-                                        </Flex>
-                                    </Box>
-                                ),
-                            },
-                        ]}
-                    />
-                    <CustomEditor />
+                <StepperContent currentStep={currentStep} className="p-0">
+                    {/* 날짜 선택 */}
+                    <DateSelector />
+
+                    {/* 장소 선택 */}
+                    <LocationSelector />
+
+                    {/* 본문 작성 */}
+                    <ContentEditor editorRefs={editorRefs} />
                 </StepperContent>
             </StepperWrapper>
         </Box>
     )
 }
-
-export default Schedule

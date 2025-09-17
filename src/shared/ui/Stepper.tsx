@@ -6,7 +6,7 @@ import React from 'react'
 import { cn } from '@/shared/lib/utils'
 
 interface StepperProps extends React.HTMLAttributes<HTMLDivElement> {
-    steps?: string[]
+    steps?: { label: string; value: string }[]
     currentStep: number
 }
 
@@ -28,7 +28,7 @@ StepperHeader.displayName = 'StepperHeader'
 const Stepper = React.forwardRef<HTMLDivElement, StepperProps>(({ steps, currentStep, className, ...props }, ref) => (
     <div ref={ref} className={cn('relative mb-8 flex items-center justify-between', className)}>
         {steps?.map((step, index) => (
-            <React.Fragment key={step}>
+            <React.Fragment key={step.value}>
                 <div className="relative z-10 flex flex-col items-center">
                     <div
                         className={cn(
@@ -42,7 +42,7 @@ const Stepper = React.forwardRef<HTMLDivElement, StepperProps>(({ steps, current
                     >
                         {index < currentStep ? <Check className="h-3 w-3" /> : index + 1}
                     </div>
-                    <span className="mt-2 text-sm font-medium">{step}</span>
+                    <span className="mt-2 text-sm font-medium">{step.label}</span>
                 </div>
                 {index < steps?.length - 1 && (
                     <div
